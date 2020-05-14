@@ -6,3 +6,4 @@ Some advice:
 * If you are looking for a conditional logic statement (`if`), you should see if mux/demux can work for you.
 * If you are having a hard time implementing a chip, try drawing it first as a series of inputs/outputs with more simple chips.
 * Start working on the ALU _early_.
+* Chips can have multiple outputs! E.g. `...out=out, out=moreOut);`
