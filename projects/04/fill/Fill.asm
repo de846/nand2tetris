@@ -6,9 +6,73 @@
 // Runs an infinite loop that listens to the keyboard input.
 // When a key is pressed (any key), the program blackens the screen,
 // i.e. writes "black" in every pixel;
-// the screen should remain fully black as long as the key is pressed. 
+// the screen should remain fully black as long as the key is pressed.
 // When no key is pressed, the program clears the screen, i.e. writes
 // "white" in every pixel;
 // the screen should remain fully clear as long as no key is pressed.
 
 // Put your code here.
+
+@KBD
+M=0
+@SCREEN
+D=A
+@pos
+M=D
+@8191
+D=A
+@max
+M=D
+@SCREEN
+D=M
+@max
+M=M=D
+
+(LOOP)
+    @KEYB
+    0;JMP
+
+(WHITE)
+    @value
+    D=M
+
+    @pos
+    A=M
+    M=D
+    M=0
+
+    @pos
+    M=M+1
+    D=M
+
+    @24575
+    D=D-A
+    @KEYB
+    D;JLT
+
+(BLACK)
+    // @value
+    // D=M
+
+    @pos
+    A=M
+    M=-1
+
+    @pos
+    M=M+1
+    D=M
+
+    @24575
+    D=D-A
+    @KEYB
+    D;JLT
+
+    
+
+(KEYB)
+    @KBD
+    D=M
+    @BLACK
+    D;JNE
+    @WHITE
+    D;JEQ
