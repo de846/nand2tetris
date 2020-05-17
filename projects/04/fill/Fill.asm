@@ -11,8 +11,6 @@
 // "white" in every pixel;
 // the screen should remain fully clear as long as no key is pressed.
 
-// Put your code here.
-
 @KBD
 M=0
 @SCREEN
@@ -26,19 +24,14 @@ M=D
 @SCREEN
 D=M
 @max
-M=M=D
+M=M+D
 
-(LOOP)
-    @KEYB
-    0;JMP
+@INIT
+0;JMP
 
 (WHITE)
-    @value
-    D=M
-
     @pos
     A=M
-    M=D
     M=0
 
     @pos
@@ -47,13 +40,14 @@ M=M=D
 
     @24575
     D=D-A
-    @KEYB
-    D;JLT
+
+    @INIT
+    D;JEQ
+
+    @WHITE
+    D;JNE
 
 (BLACK)
-    // @value
-    // D=M
-
     @pos
     A=M
     M=-1
@@ -64,12 +58,18 @@ M=M=D
 
     @24575
     D=D-A
-    @KEYB
-    D;JLT
 
-    
+    @INIT
+    D;JEQ
 
-(KEYB)
+    @BLACK
+    D;JNE
+
+(INIT)
+    @SCREEN
+    D=A
+    @pos
+    M=D
     @KBD
     D=M
     @BLACK
