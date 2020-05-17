@@ -17,14 +17,6 @@ M=0
 D=A
 @pos
 M=D
-@8191
-D=A
-@max
-M=D
-@SCREEN
-D=M
-@max
-M=M+D
 
 @INIT
 0;JMP
@@ -38,7 +30,7 @@ M=M+D
     M=M+1
     D=M
 
-    @24575
+    @24576
     D=D-A
 
     @INIT
@@ -56,7 +48,7 @@ M=M+D
     M=M+1
     D=M
 
-    @24575
+    @24576
     D=D-A
 
     @INIT
