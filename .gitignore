@@ -1,2 +1,2 @@
-tools/bin/*.dat
+tools/
 projects/**/*.out
