@@ -27,10 +27,20 @@ CHIP Memory {
     OUT out[16];
 
     PARTS:
+    // Determine where to send the load bit (to ram or to screen, loading into the keyboard
+    // doesn't make any sense)
     DMux4Way(in=load, sel=address[13..14], a=ramA, b=ramB, c=ramScreen);
+    
+    // Quick hack to determine if RAM should load data since there is no Dmux3Way
     Or(a=ramA, b=ramB, out=loadRam);
+
+    // RAM16K only needs 14 bits to address
     RAM16K(in=in, load=loadRam, address=address[0..13], out=ramOut);
+
+    // Screen is 8K, so half size of 16K, so needs 13 bits
     Screen(in=in, load=ramScreen, address=address[0..12], out=screenOut);
     Keyboard(out=keyboard);
+
+    // Read from the proper source and connect to out wire
     Mux4Way16(a=ramOut, b=ramOut, c=screenOut, d=keyboard, sel=address[13..14], out=out);
 }
