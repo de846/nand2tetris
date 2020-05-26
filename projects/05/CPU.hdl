@@ -38,6 +38,30 @@ CHIP CPU {
         addressM[15],    // Address in data memory (of M)
         pc[15];          // address of next instruction
 
+// instruction[15], 1 == C, 0 == A
+// A instruction[0..14] = Constant
+// C Instruction
+//  [0..2] jumps
+//      instruction[0] = j3 jump if < 0
+//      instruction[1] = j2 jump if = 0
+//      instruction[2] = j1 jump if > 0
+//  [3..5] dest
+//      instruction[3] = d3 write to M
+//      instruction[4] = d2 write to D
+//      instruction[5] = d1 write to A
+// [6..11] control bits
+//      instruction[6]  = c6 no
+//      instruction[7]  = c5 f
+//      instruction[8]  = c4 ny
+//      instruction[9]  = c3 zy
+//      instruction[10] = c2 nx
+//      instruction[11] = c1 zx
+// instruction[12] = a
+
+
+
+
+
     PARTS:
     // Put your code here:
 }
