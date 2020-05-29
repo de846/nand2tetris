@@ -58,10 +58,44 @@ CHIP CPU {
 //      instruction[11] = c1 zx
 // instruction[12] = a
 
-
-
-
-
     PARTS:
-    // Put your code here:
+    And(a=instruction[5], b=true, out=aRegLoad);
+    Not(in=instruction[15], out=opCode);
+    And(a=instruction[6], b=true, out=no);
+    And(a=instruction[7], b=true, out=f);
+    And(a=instruction[8], b=true, out=ny);
+    And(a=instruction[9], b=true, out=zy);
+    And(a=instruction[10], b=true, out=nx);
+    And(a=instruction[11], b=true, out=zx);
+    Or(a=opCode, b=instruction[5], out=aMuxSel);
+    And(a=instruction[15], b=instruction[12], out=switchAM);
+
+
+    Mux16(a=aluOut, b=instruction, sel=opCode, out=aMuxOut);
+    ARegister(in=aMuxOut, load=aMuxSel, out=aRegOut, out[0..14]=addressM);
+    Mux16(a=aRegOut, b=inM, sel=switchAM, out=aluInput1);
+
+    And(a=instruction[15], b=instruction[4], out=dRegLoad);
+    DRegister(in=aluOut, load=dRegLoad, out=dRegOut);
+    ALU(x=dRegOut, y=aluInput1, zx=zx, nx=nx, zy=zy, ny=ny, f=f, no=no, out=outM, out=aluOut, zr=zrOut, ng=ngOut);
+    And(a=instruction[15], b=instruction[3], out=writeM);
+
+    // PC
+    Not(in=ngOut, out=pos);
+    Not(in=zrOut, out=notZero);
+    And(a=instruction[15], b=instruction[0], out=jgt);
+    And(a=pos, b=notZero, out=posNotZero);
+    And(a=jgt, b=posNotZero, out=load1);
+
+    And(a=instruction[15], b=instruction[1], out=jeq);
+    And(a=jeq, b=zrOut, out=load2);
+
+    And(a=instruction[15], b=instruction[2], out=jlt);
+    And(a=jlt, b=ngOut, out=load3);
+
+    Or(a=load1, b=load2, out=loadTemp);
+    Or(a=load3, b=loadTemp, out=load);
+
+    PC(in=aRegOut, load=load, inc=true, reset=reset, out[0..14]=pc);
+
 }
