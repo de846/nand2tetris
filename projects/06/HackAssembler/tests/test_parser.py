@@ -2,7 +2,7 @@ from unittest import TestCase
 from hack_parser import Parser
 from main import InstructionTypes
 
-INSTRUCTIONS = ["@1", "@2", "@10", "(LOOP)", "D=M;JMP"]
+INSTRUCTIONS = ["@1", "@2", "@10", "(LOOP)", "MD=A-1;JMP", "D", "0;JMP"]
 
 
 class TestParser(TestCase):
@@ -46,14 +46,35 @@ class TestParser(TestCase):
         instruction = parser.parse()
         self.assertEqual("1", instruction)
 
-    def test_parse_c_instruction(self):
+    def test_parse_c_instruction_1(self):
         parser = Parser(INSTRUCTIONS)
         parser.parse()
         parser.parse()
         parser.parse()
         parser.parse()
         instruction = parser.parse()
-        self.assertEqual(instruction, INSTRUCTIONS[4])
+        self.assertEqual(('MD', 'A-1', 'JMP'), instruction)
+
+    def test_parse_c_instruction_2(self):
+        parser = Parser(INSTRUCTIONS)
+        parser.parse()
+        parser.parse()
+        parser.parse()
+        parser.parse()
+        parser.parse()
+        instruction = parser.parse()
+        self.assertEqual(('', 'D', ''), instruction)
+
+    def test_parse_c_instruction_3(self):
+        parser = Parser(INSTRUCTIONS)
+        parser.parse()
+        parser.parse()
+        parser.parse()
+        parser.parse()
+        parser.parse()
+        parser.parse()
+        instruction = parser.parse()
+        self.assertEqual(('', '0', 'JMP'), instruction)
 
     def test_parse_label_instruction(self):
         parser = Parser(INSTRUCTIONS)

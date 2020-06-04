@@ -32,7 +32,8 @@ class Parser:
         inst_map = {InstructionTypes.A.value: self.parse_a_instruction,
                     InstructionTypes.C.value: self.parse_c_instruction,
                     InstructionTypes.LABEL.value: self.parse_label_instruction}
-        return inst_map[self.current_instruction_type()]()
+        cur_type = self.current_instruction_type()
+        return inst_map[cur_type]()
 
     def parse_a_instruction(self):
         instruction = self.read_and_move_cursor()
@@ -41,7 +42,15 @@ class Parser:
 
     def parse_c_instruction(self):
         instruction = self.read_and_move_cursor()
-        return instruction
+        out = re.search('([AMD]*=|^)(.*?)(?=(;[A-Z]*|$))', instruction)
+        dest = out.group(1)
+        if dest:
+            dest = dest.strip('=')
+        comp = out.group(2)
+        jump = out.group(3)
+        if jump:
+            jump = jump.strip(';')
+        return dest, comp, jump
 
     def parse_label_instruction(self):
         instruction = self.read_and_move_cursor()
