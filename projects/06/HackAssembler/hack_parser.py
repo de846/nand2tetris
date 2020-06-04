@@ -36,7 +36,8 @@ class Parser:
 
     def parse_a_instruction(self):
         instruction = self.read_and_move_cursor()
-        return instruction
+        inst = instruction[1:]
+        return inst
 
     def parse_c_instruction(self):
         instruction = self.read_and_move_cursor()
@@ -44,6 +45,7 @@ class Parser:
 
     def parse_label_instruction(self):
         instruction = self.read_and_move_cursor()
-        return instruction
+        match = re.match(r'(\()([A-Za-z]+)(\))', instruction)
+        return match.group(2)
 
 

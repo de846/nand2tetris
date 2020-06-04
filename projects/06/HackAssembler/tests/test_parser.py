@@ -44,24 +44,24 @@ class TestParser(TestCase):
     def test_parse_a_instruction(self):
         parser = Parser(INSTRUCTIONS)
         instruction = parser.parse()
-        self.assertEqual(instruction, INSTRUCTIONS[0])
+        self.assertEqual("1", instruction)
 
     def test_parse_c_instruction(self):
         parser = Parser(INSTRUCTIONS)
-        instruction = parser.parse()
-        instruction = parser.parse()
-        instruction = parser.parse()
-        instruction = parser.parse()
+        parser.parse()
+        parser.parse()
+        parser.parse()
+        parser.parse()
         instruction = parser.parse()
         self.assertEqual(instruction, INSTRUCTIONS[4])
 
     def test_parse_label_instruction(self):
         parser = Parser(INSTRUCTIONS)
+        parser.parse()
+        parser.parse()
+        parser.parse()
         instruction = parser.parse()
-        instruction = parser.parse()
-        instruction = parser.parse()
-        instruction = parser.parse()
-        self.assertEqual(instruction, INSTRUCTIONS[3])
+        self.assertEqual("LOOP", instruction)
 
 
 
