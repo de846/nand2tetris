@@ -9,9 +9,9 @@ INSTRUCTIONS = ["@1", "@2", "@10", "(LOOP)", "MD=A-1;JMP", "D", "0;JMP"]
 class TestTranslator(TestCase):
     def test_a_translation(self):
         parser = Parser(INSTRUCTIONS)
-        foo = parser.parse()
+        instruction = parser.parse()
         translator = HackTranslator()
-        a_inst = translator.translate(foo)
+        a_inst = translator.translate(instruction)
         self.assertEqual(a_inst, "0000000000000001")
 
     def test_c_translation(self):
@@ -20,8 +20,8 @@ class TestTranslator(TestCase):
         parser.parse()
         parser.parse()
         parser.parse()
-        foo = parser.parse()
+        instruction = parser.parse()
         translator = HackTranslator()
-        c_inst = translator.translate(foo)
+        c_inst = translator.translate(instruction)
         self.assertEqual(c_inst, "1110110010011111")
 
