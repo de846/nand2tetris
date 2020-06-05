@@ -44,7 +44,7 @@ class TestParser(TestCase):
     def test_parse_a_instruction(self):
         parser = Parser(INSTRUCTIONS)
         instruction = parser.parse()
-        self.assertEqual("1", instruction)
+        self.assertEqual((InstructionTypes.A.value, "1"), instruction)
 
     def test_parse_c_instruction_1(self):
         parser = Parser(INSTRUCTIONS)
@@ -53,7 +53,7 @@ class TestParser(TestCase):
         parser.parse()
         parser.parse()
         instruction = parser.parse()
-        self.assertEqual(('MD', 'A-1', 'JMP'), instruction)
+        self.assertEqual((InstructionTypes.C.value, ("MD", "A-1", "JMP")), instruction)
 
     def test_parse_c_instruction_2(self):
         parser = Parser(INSTRUCTIONS)
@@ -63,7 +63,7 @@ class TestParser(TestCase):
         parser.parse()
         parser.parse()
         instruction = parser.parse()
-        self.assertEqual(('', 'D', ''), instruction)
+        self.assertEqual((InstructionTypes.C.value, ("", "D", "")), instruction)
 
     def test_parse_c_instruction_3(self):
         parser = Parser(INSTRUCTIONS)
@@ -74,7 +74,7 @@ class TestParser(TestCase):
         parser.parse()
         parser.parse()
         instruction = parser.parse()
-        self.assertEqual(('', '0', 'JMP'), instruction)
+        self.assertEqual((InstructionTypes.C.value, ("", "0", "JMP")), instruction)
 
     def test_parse_label_instruction(self):
         parser = Parser(INSTRUCTIONS)
@@ -82,8 +82,4 @@ class TestParser(TestCase):
         parser.parse()
         parser.parse()
         instruction = parser.parse()
-        self.assertEqual("LOOP", instruction)
-
-
-
-
+        self.assertEqual((InstructionTypes.LABEL.value, "LOOP"), instruction)
