@@ -1,7 +1,6 @@
 from unittest import TestCase
 from hack_translator import HackTranslator
 from hack_parser import HackParser
-from main import InstructionTypes
 from tests.util import read_x_instructions
 
 
@@ -21,4 +20,10 @@ class TestTranslator(TestCase):
         instruction = read_x_instructions(parser, 5)
         translator = HackTranslator()
         c_inst = translator.translate(instruction)
+        self.assertEqual("1110110010011111", c_inst)
+
+    def test_d_translation(self):
+        parser = HackParser(INSTRUCTIONS)
+        instruction = read_x_instructions(parser, 5)
+        c_inst = HackTranslator.translate(instruction)
         self.assertEqual("1110110010011111", c_inst)

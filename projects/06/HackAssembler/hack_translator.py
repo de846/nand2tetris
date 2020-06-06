@@ -1,4 +1,4 @@
-from main import InstructionTypes
+from instruction_types import InstructionTypes
 
 COMP_MAP = {
     "0": ("101010", "0"),
@@ -55,23 +55,23 @@ JUMP_MAP = {
 
 
 class HackTranslator:
-    def __init__(self):
-        self.foo = 0
-
-    def translate(self, instruction):
+    @staticmethod
+    def translate(instruction):
         instruction_type = instruction[0]
         types = {
-            InstructionTypes.A.value: self._translate_a,
-            InstructionTypes.C.value: self._translate_c,
-            InstructionTypes.LABEL.value: self._translate_label,
+            InstructionTypes.A.value: HackTranslator._translate_a,
+            InstructionTypes.C.value: HackTranslator._translate_c,
+            InstructionTypes.LABEL.value: HackTranslator._translate_label,
         }
         return types[instruction_type](instruction[1])
 
-    def _translate_a(self, instruction):
+    @staticmethod
+    def _translate_a(instruction):
         value = "0" + "{0:015b}".format(int(instruction))
         return value
 
-    def _translate_c(self, instruction):
+    @staticmethod
+    def _translate_c(instruction):
         dest, comp, jump = instruction
         value = (
             "111"
@@ -82,5 +82,6 @@ class HackTranslator:
         )
         return value
 
-    def _translate_label(self, instruction):
+    @staticmethod
+    def _translate_label(instruction):
         pass

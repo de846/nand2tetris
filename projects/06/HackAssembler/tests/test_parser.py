@@ -1,6 +1,6 @@
 from unittest import TestCase
 from hack_parser import HackParser
-from main import InstructionTypes
+from instruction_types import InstructionTypes
 from tests.util import read_x_instructions
 
 INSTRUCTIONS = ["@1", "@2", "@10", "(LOOP)", "MD=A-1;JMP", "D", "0;JMP"]
