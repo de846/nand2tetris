@@ -28,7 +28,7 @@ COMP_MAP = {
     "D-M": ("010011", "1"),
     "M-D": ("000111", "1"),
     "D&M": ("000000", "1"),
-    "D|M": ("010101", "1")
+    "D|M": ("010101", "1"),
 }
 
 DEST_MAP = {
@@ -39,7 +39,7 @@ DEST_MAP = {
     "A": "100",
     "AM": "101",
     "AD": "110",
-    "AMD": "111"
+    "AMD": "111",
 }
 
 JUMP_MAP = {
@@ -50,7 +50,7 @@ JUMP_MAP = {
     "JLT": "100",
     "JNE": "101",
     "JLE": "110",
-    "JMP": "111"
+    "JMP": "111",
 }
 
 
@@ -60,9 +60,11 @@ class HackTranslator:
 
     def translate(self, instruction):
         instruction_type = instruction[0]
-        types = {InstructionTypes.A.value: self._translate_a,
-                 InstructionTypes.C.value: self._translate_c,
-                 InstructionTypes.LABEL.value: self._translate_label}
+        types = {
+            InstructionTypes.A.value: self._translate_a,
+            InstructionTypes.C.value: self._translate_c,
+            InstructionTypes.LABEL.value: self._translate_label,
+        }
         return types[instruction_type](instruction[1])
 
     def _translate_a(self, instruction):
@@ -71,9 +73,14 @@ class HackTranslator:
 
     def _translate_c(self, instruction):
         dest, comp, jump = instruction
-        value = "111" + COMP_MAP[comp][1] + COMP_MAP[comp][0] + DEST_MAP[dest] + JUMP_MAP[jump]
+        value = (
+            "111"
+            + COMP_MAP[comp][1]
+            + COMP_MAP[comp][0]
+            + DEST_MAP[dest]
+            + JUMP_MAP[jump]
+        )
         return value
 
     def _translate_label(self, instruction):
         pass
-

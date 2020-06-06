@@ -22,4 +22,3 @@ class TestTranslator(TestCase):
         translator = HackTranslator()
         c_inst = translator.translate(instruction)
         self.assertEqual("1110110010011111", c_inst)
-
