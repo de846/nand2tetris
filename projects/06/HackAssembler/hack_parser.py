@@ -2,7 +2,7 @@ import re
 from main import InstructionTypes
 
 
-class Parser:
+class HackParser:
     def __init__(self, asm: list):
         self.asm = asm
         self.cursor = 0
