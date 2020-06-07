@@ -1,5 +1,6 @@
 import re
 from instruction_types import InstructionTypes
+from hack_symbol_table import HackSymbolTable
 import logging
 
 log = logging.getLogger(__name__)
@@ -7,9 +8,11 @@ logging.basicConfig(level=logging.INFO)
 
 
 class HackParser:
-    def __init__(self, asm: list):
+    def __init__(self, asm: list, symbol_table: HackSymbolTable):
         self.asm = asm
         self.cursor = 0
+        self.symbol_table = symbol_table
+        self.rom_address = 0
 
     def has_more_instructions(self):
         return False if self.cursor >= len(self.asm) else True
@@ -50,13 +53,14 @@ class HackParser:
         cur_type = self.get_instruction_type(instruction)
         return cur_type, inst_map[cur_type](instruction)
 
-    def ignore_instruction(self, instruction=None):
+    def ignore_instruction(self, _=None):
         self.cursor += 1
         return None
 
     def parse_a_instruction(self, instruction=None):
         instruction = instruction or self.read_and_move_cursor()
         inst = instruction[1:]
+        self.rom_address += 1
         return inst
 
     def parse_c_instruction(self, instruction=None):
@@ -69,18 +73,25 @@ class HackParser:
         jump = out.group(3)
         if jump:
             jump = jump.strip(";")
+        self.rom_address += 1
         return dest, comp, jump
 
     def parse_label_instruction(self, instruction=None):
         instruction = instruction or self.read_and_move_cursor()
-        log.debug(instruction)
-        match = re.match(r"(\()([A-Za-z]+)(\))", instruction)
-        return match.group(2)
+        match = re.match(r"\((.+)\)", instruction)
+        label_name = match.group(1)
+        log.debug(f"{label_name} points to {self.rom_address}")
+        self.symbol_table.add(label_name, str(self.rom_address))
+        return label_name
 
     def parse_source(self):
         parsed_code = []
         while self.has_more_instructions():
             code = self.parse()
-            if code and code[0] is not InstructionTypes.IGNORE.value:
+            if (
+                code
+                and code[0] is not InstructionTypes.IGNORE.value
+                and code[0] is not InstructionTypes.LABEL.value
+            ):
                 parsed_code.append(code)
         return parsed_code

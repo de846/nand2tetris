@@ -1,4 +1,9 @@
 from instruction_types import InstructionTypes
+from hack_symbol_table import HackSymbolTable
+import logging
+
+log = logging.getLogger(__name__)
+logging.basicConfig(level=logging.INFO)
 
 COMP_MAP = {
     "0": ("101010", "0"),
@@ -55,23 +60,34 @@ JUMP_MAP = {
 
 
 class HackTranslator:
-    @staticmethod
-    def translate(instruction):
+    def __init__(self, symbol_table: HackSymbolTable):
+        self.symbol_table = symbol_table
+
+    def translate(self, instruction):
         instruction_type = instruction[0]
         types = {
-            InstructionTypes.A.value: HackTranslator._translate_a,
-            InstructionTypes.C.value: HackTranslator._translate_c,
-            InstructionTypes.LABEL.value: HackTranslator._translate_label,
+            InstructionTypes.A.value: self._translate_a,
+            InstructionTypes.C.value: self._translate_c,
+            InstructionTypes.LABEL.value: self._translate_label,
         }
         return types[instruction_type](instruction[1])
 
-    @staticmethod
-    def _translate_a(instruction):
-        value = "0" + "{0:015b}".format(int(instruction))
+    def _translate_a(self, instruction):
+        log.debug(f"Got instruction {instruction}")
+        try:
+            value = int(instruction)
+        except ValueError:
+            if not self.symbol_table.is_in_table(instruction):
+                value = self.symbol_table.add(instruction)
+                log.debug(f"Adding {instruction} at address {value}")
+            else:
+                value = self.symbol_table.get(instruction)
+                log.debug(f"Retrieved {instruction} at address {value}")
+                value = self.symbol_table.get(instruction)
+        value = "0" + "{0:015b}".format(int(value))
         return value
 
-    @staticmethod
-    def _translate_c(instruction):
+    def _translate_c(self, instruction):
         dest, comp, jump = instruction
         value = (
             "111"
@@ -82,6 +98,5 @@ class HackTranslator:
         )
         return value
 
-    @staticmethod
-    def _translate_label(instruction):
+    def _translate_label(self, instruction):
         pass
