@@ -28,8 +28,8 @@ class HackParser:
             instruction = instruction[:comments].strip()
         return instruction if instruction else None
 
-    def current_instruction_type(self):
-        cur_inst = self.filter_instruction(self._read())
+    def get_instruction_type(self, instruction=None):
+        cur_inst = instruction or self.filter_instruction(self._read())
 
         if not cur_inst:
             return InstructionTypes.IGNORE.value
@@ -40,27 +40,27 @@ class HackParser:
         else:
             return InstructionTypes.C.value
 
-    def parse(self):
+    def parse(self, instruction=None):
         inst_map = {
             InstructionTypes.A.value: self.parse_a_instruction,
             InstructionTypes.C.value: self.parse_c_instruction,
             InstructionTypes.LABEL.value: self.parse_label_instruction,
             InstructionTypes.IGNORE.value: self.ignore_instruction,
         }
-        cur_type = self.current_instruction_type()
-        return cur_type, inst_map[cur_type]()
+        cur_type = self.get_instruction_type(instruction)
+        return cur_type, inst_map[cur_type](instruction)
 
-    def ignore_instruction(self):
-        self.read_and_move_cursor()
+    def ignore_instruction(self, instruction=None):
+        self.cursor += 1
         return None
 
-    def parse_a_instruction(self):
-        instruction = self.read_and_move_cursor()
+    def parse_a_instruction(self, instruction=None):
+        instruction = instruction or self.read_and_move_cursor()
         inst = instruction[1:]
         return inst
 
-    def parse_c_instruction(self):
-        instruction = self.read_and_move_cursor()
+    def parse_c_instruction(self, instruction=None):
+        instruction = instruction or self.read_and_move_cursor()
         out = re.search("([AMD]*=|^)(.*?)(?=(;[A-Z]*|$))", instruction)
         dest = out.group(1)
         if dest:
@@ -71,10 +71,10 @@ class HackParser:
             jump = jump.strip(";")
         return dest, comp, jump
 
-    def parse_label_instruction(self):
-        instruction = self.read_and_move_cursor()
+    def parse_label_instruction(self, instruction=None):
+        instruction = instruction or self.read_and_move_cursor()
+        log.debug(instruction)
         match = re.match(r"(\()([A-Za-z]+)(\))", instruction)
-        log.error(instruction)
         return match.group(2)
 
     def parse_source(self):

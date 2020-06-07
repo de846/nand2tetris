@@ -14,25 +14,25 @@ class TestParser(TestCase):
 
     def test_has_more_instructions(self):
         parser = HackParser(INSTRUCTIONS)
-        parser.read_and_move_cursor()
+        parser.parse()
         self.assertTrue(parser.has_more_instructions())
 
     def test_get_a_instruction_type(self):
         parser = HackParser(INSTRUCTIONS)
         parser.read_and_move_cursor()
-        instruction_type = parser.current_instruction_type()
+        instruction_type = parser.get_instruction_type()
         self.assertEqual(InstructionTypes.A.value, instruction_type)
 
     def test_get_c_instruction_type(self):
         parser = HackParser(INSTRUCTIONS)
         read_x_instructions(parser, 4)
-        instruction_type = parser.current_instruction_type()
+        instruction_type = parser.get_instruction_type()
         self.assertEqual(InstructionTypes.C.value, instruction_type)
 
     def test_get_label_instruction_type(self):
         parser = HackParser(INSTRUCTIONS)
         read_x_instructions(parser, 3)
-        instruction_type = parser.current_instruction_type()
+        instruction_type = parser.get_instruction_type()
         self.assertEqual(InstructionTypes.LABEL.value, instruction_type)
 
     def test_parse_a_instruction(self):
@@ -59,3 +59,22 @@ class TestParser(TestCase):
         parser = HackParser(INSTRUCTIONS)
         instruction = read_x_instructions(parser, 4)
         self.assertEqual((InstructionTypes.LABEL.value, "LOOP"), instruction)
+
+    def test_parse_label_instruction_explicit(self):
+        parser = HackParser([])
+        instruction = "(BAR)"
+        out = parser.parse_label_instruction(instruction)
+        self.assertEqual("BAR", out)
+
+    def test_parse_a_instruction_explicit(self):
+        parser = HackParser([])
+        instruction = "@25477"
+        out = parser.parse_a_instruction(instruction)
+        self.assertEqual("25477", out)
+
+    def test_parse_c_instruction_explicit(self):
+        parser = HackParser([])
+        instruction = "AM=M|D;JGT"
+        out = parser.parse_c_instruction(instruction)
+        self.assertEqual(("AM", "M|D", "JGT"), out)
+

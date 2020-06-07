@@ -15,15 +15,29 @@ class TestTranslator(TestCase):
         a_inst = translator.translate(instruction)
         self.assertEqual("0000000000000001", a_inst)
 
-    def test_c_translation(self):
+    def test_c_translation_1(self):
         parser = HackParser(INSTRUCTIONS)
         instruction = read_x_instructions(parser, 5)
         translator = HackTranslator()
         c_inst = translator.translate(instruction)
         self.assertEqual("1110110010011111", c_inst)
 
-    def test_d_translation(self):
-        parser = HackParser(INSTRUCTIONS)
-        instruction = read_x_instructions(parser, 5)
+    def test_c_translation_2(self):
+        parser = HackParser([])
+        instruction = parser.parse("D")
         c_inst = HackTranslator.translate(instruction)
-        self.assertEqual("1110110010011111", c_inst)
+        self.assertEqual("1110001100000000", c_inst)
+
+    def test_c_translation_3(self):
+        parser = HackParser([])
+        instruction = parser.parse("M=A")
+        c_inst = HackTranslator.translate(instruction)
+        self.assertEqual("1110110000001000", c_inst)
+
+    def test_c_translation_4(self):
+        parser = HackParser([])
+        instruction = parser.parse("AM=D|M;JLE")
+        c_inst = HackTranslator.translate(instruction)
+        self.assertEqual("1111010101101110", c_inst)
+
+
