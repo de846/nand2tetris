@@ -15,7 +15,7 @@ def main(asm):
     log.info("Parsing assembly code...")
     parser = HackParser(source.splitlines())
     parsed_code = parser.parse_source()
-    log.info(parsed_code)
+    log.debug(parsed_code)
     hack_filename = asm.name.replace(".asm", ".hack")
     with open(hack_filename, "w") as outfile:
         for code in parsed_code:
