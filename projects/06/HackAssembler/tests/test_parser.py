@@ -78,8 +78,3 @@ class TestParser(TestCase):
         instruction = "AM=M|D;JGT"
         out = parser.parse_c_instruction(instruction)
         self.assertEqual(("AM", "M|D", "JGT"), out)
-
-    def test_label_parsing(self):
-        parser = create_parser(INSTRUCTIONS)
-        while parser.has_more_instructions():
-            parser.parse()

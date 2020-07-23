@@ -1,8 +1,10 @@
-import click
-from hack_parser import HackParser
-from hack_translator import HackTranslator
-from hack_symbol_table import HackSymbolTable
 import logging
+
+import click
+
+from hack_parser import HackParser
+from hack_symbol_table import HackSymbolTable
+from hack_translator import HackTranslator
 
 log = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
@@ -11,12 +13,19 @@ logging.basicConfig(level=logging.INFO)
 @click.command()
 @click.argument("asm", type=click.File("r"), required=True)
 def main(asm):
-    log.info("Reading source assembly into memory...")
-    source = asm.read()
+    """
+    The HackAssembler program to convert nand2tetris assembly to runnable
+    machine code for the course's CPUEmulator.
 
+    ASM is the file path to the source assembly file.
+    """
+    log.info("Reading source assembly into memory...")
+    source = asm.read().splitlines()
+
+    # Create a symbol table so it can be used in both the Parser and the Translator
     symbol_table = HackSymbolTable()
+    parser = HackParser(source, symbol_table)
     translator = HackTranslator(symbol_table)
-    parser = HackParser(source.splitlines(), symbol_table)
     parsed_code = parser.parse_source()
     log.debug(parsed_code)
 

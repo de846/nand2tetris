@@ -1,10 +1,12 @@
-from instruction_types import InstructionTypes
-from hack_symbol_table import HackSymbolTable
 import logging
+
+from hack_symbol_table import HackSymbolTable
+from instruction_types import InstructionTypes
 
 log = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
+# Values taken from nand2tetris course slides
 COMP_MAP = {
     "0": ("101010", "0"),
     "1": ("111111", "0"),
@@ -60,20 +62,29 @@ JUMP_MAP = {
 
 
 class HackTranslator:
+    """The HackTranslator is responsible for translating parsed instructions based
+    on the maps above, and for gets/sets to the symbol table."""
+
     def __init__(self, symbol_table: HackSymbolTable):
         self.symbol_table = symbol_table
 
-    def translate(self, instruction):
-        instruction_type = instruction[0]
-        types = {
+        self.inst_map = {
             InstructionTypes.A.value: self._translate_a,
             InstructionTypes.C.value: self._translate_c,
             InstructionTypes.LABEL.value: self._translate_label,
         }
-        return types[instruction_type](instruction[1])
+
+    def translate(self, instruction):
+        """Main translate method which directs the instruction to a specific
+        instruction translator based on its type."""
+        instruction_type = instruction[0]
+        return self.inst_map[instruction_type](instruction[1])
 
     def _translate_a(self, instruction):
-        log.debug(f"Got instruction {instruction}")
+        """Translate A instructions. If we can convert to int, we are dealing
+        with a simple numerical address, otherwise we have a user-defined label
+        and need to consult the symbol_table."""
+        log.debug(f"Read instruction {instruction}")
         try:
             value = int(instruction)
         except ValueError:
@@ -83,7 +94,7 @@ class HackTranslator:
             else:
                 value = self.symbol_table.get(instruction)
                 log.debug(f"Retrieved {instruction} at address {value}")
-                value = self.symbol_table.get(instruction)
+                # value = self.symbol_table.get(instruction)
         value = "0" + "{0:015b}".format(int(value))
         return value
 
@@ -99,4 +110,5 @@ class HackTranslator:
         return value
 
     def _translate_label(self, instruction):
+        """Do nothing at this stage when encountering a label."""
         pass

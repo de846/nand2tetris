@@ -1,18 +1,35 @@
-import re
-from instruction_types import InstructionTypes
-from hack_symbol_table import HackSymbolTable
 import logging
+import re
+
+from hack_symbol_table import HackSymbolTable
+from instruction_types import InstructionTypes
 
 log = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
 
 class HackParser:
+    """The HackParser is responsible for reading assembly code and determining
+    its type, parsing it, and tokenizing it so it can be translated easily
+    by a separate translator."""
+
     def __init__(self, asm: list, symbol_table: HackSymbolTable):
+        """
+        Initialization of the HackParser
+        :param asm: a list of assembly instructions
+        :param symbol_table: a reference to an instantiated HackSymbolTable
+        """
         self.asm = asm
-        self.cursor = 0
         self.symbol_table = symbol_table
+        self.cursor = 0
         self.rom_address = 0
+
+        self.inst_map = {
+            InstructionTypes.A.value: self.parse_a_instruction,
+            InstructionTypes.C.value: self.parse_c_instruction,
+            InstructionTypes.LABEL.value: self.parse_label_instruction,
+            InstructionTypes.IGNORE.value: self.ignore_instruction,
+        }
 
     def has_more_instructions(self):
         return False if self.cursor >= len(self.asm) else True
@@ -26,12 +43,15 @@ class HackParser:
         return instruction
 
     def filter_instruction(self, instruction):
+        """Removes comments that may appear on individual lines or after
+        an instruction."""
         comments = instruction.find("//")
         if comments != -1:
             instruction = instruction[:comments].strip()
         return instruction if instruction else None
 
     def get_instruction_type(self, instruction=None):
+        """Determines the type of the instruction by looking for specific markers."""
         cur_inst = instruction or self.filter_instruction(self._read())
 
         if not cur_inst:
@@ -44,14 +64,10 @@ class HackParser:
             return InstructionTypes.C.value
 
     def parse(self, instruction=None):
-        inst_map = {
-            InstructionTypes.A.value: self.parse_a_instruction,
-            InstructionTypes.C.value: self.parse_c_instruction,
-            InstructionTypes.LABEL.value: self.parse_label_instruction,
-            InstructionTypes.IGNORE.value: self.ignore_instruction,
-        }
+        """Parse one instruction. Forwards the instruction to a specific
+        parser for its instruction type."""
         cur_type = self.get_instruction_type(instruction)
-        return cur_type, inst_map[cur_type](instruction)
+        return cur_type, self.inst_map[cur_type](instruction)
 
     def ignore_instruction(self, _=None):
         self.cursor += 1
@@ -77,6 +93,8 @@ class HackParser:
         return dest, comp, jump
 
     def parse_label_instruction(self, instruction=None):
+        """Labels are added to the symbol table in this step to avoid performing
+        a 2nd full pass scan of mapping to the ROM Address when translating."""
         instruction = instruction or self.read_and_move_cursor()
         match = re.match(r"\((.+)\)", instruction)
         label_name = match.group(1)
@@ -85,6 +103,8 @@ class HackParser:
         return label_name
 
     def parse_source(self):
+        """Parse all instructions and return a list of tuples each of the instruction type
+        and the parsed instruction output."""
         parsed_code = []
         while self.has_more_instructions():
             code = self.parse()
